@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://github.com/gokaybalci/BlackSheep"><img src="logo.tga" alt="BlackSheep" width="200"></a>
+  <a href="https://github.com/gokaybalci/BlackSheep"><img src="https://i.imgur.com/5Fzdm58.png" alt="BlackSheep" width="200"></a>
   </h1>
   <div align="center">
 <sup>World of Warcraft blacklisting addon</sup> 
@@ -20,9 +20,7 @@
 
 <p align="center">
   <a href="#key-features">Features</a> •
-  <a href="#how-to-use">How To Use</a> •
   <a href="#download">Download</a> •
-  <a href="#credits">Credits</a> •
   <a href="#license">License</a>
 </p>
 
@@ -32,13 +30,9 @@
 * Blacklist people for leaving, scamming and ninja.
 
 
-
-
-
-
 ## Download
 
-- Download using CurseForge
+- ~~Download using CurseForge~~
 - Or go to [Releases](https://github.com/gokaybalci/BlackSheep/releases) and download.
 
 
