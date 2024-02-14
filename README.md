@@ -1,16 +1,15 @@
 
-<h1 align="center">
-  <br>
-  <a href="https://github.com/gokaybalci/BlackSheep"><img src="https://i.imgur.com/5Fzdm58.png" alt="BlackSheep" width="200"></a>
-  </h1>
-  <div align="center">
-<sup>World of Warcraft blacklisting addon</sup> 
+<div align="center">
+
+![BlackSheep](/images/logo.png)
+
+
+<sup>a World of Warcraft blacklisting addon</sup> 
 </div>
 
 
 
-
-<h4 align="center">A WoW add-on for blacklisting people in game.</h4>
+<h4 align="center">A simple WoW add-on for blacklisting people you don't want to play with.</h4>
 
 <p align="center">
 <a href="https://saythanks.io/to/gokaybalci">
@@ -20,6 +19,7 @@
 
 <p align="center">
   <a href="#key-features">Features</a> •
+  <a href="#how-to-use">How To Use</a> •
   <a href="#download">Download</a> •
   <a href="#license">License</a>
 </p>
@@ -27,12 +27,57 @@
 
 ## Key Features
 
-* Blacklist people for leaving, scamming and ninja.
+* Blacklist people for leaving, scamming or any reason whatsoever.
+* Your list works on across all your characters.
+
+## How to Use
+
+![Baine](/images/Baine.png)
+
+- Write /bs in-game chat
+- Write the name of the player and blacklisting reason
+- Enjoy!
+
+## How to Integrate a Custom List
+- Enter into the Addon directory *(.../World of Warcraft/_retail_/Interface/AddOns/BlackSheep/)*
+- Open **CustomList.lua** file
+- Manually enter the name of the player and a reason. It should look like this:
+
+```
+CustomList = {
+    ["custom_retail_DATA"] = {
+        {
+			"NameofthePlayer", -- [1]
+			"ReasonforBlacklisting", -- [2]
+		}, -- [1]
+    }
+} 
+```
+- You can enter as many names as you like:
+
+```
+CustomList = {
+    ["custom_retail_DATA"] = {
+        {
+			"NameofthePlayer", -- [1]
+			"ReasonforBlacklisting", -- [2]
+		}, -- [1]
+		{
+			"NameofthePlayer2", -- [1]
+			"ReasonforBlacklisting2", -- [2]
+		}, -- [2]    
+    }
+} 
+```
+
+## Todo
+- [X] Character-wide blacklist
+- [X] Custom player list integration
+- [　] Right-click context menu
+- [　] Warning screen when they are in your group
 
 
 ## Download
-
-- ~~Download using CurseForge~~
 - Or go to [Releases](https://github.com/gokaybalci/BlackSheep/releases) and download.
 
 

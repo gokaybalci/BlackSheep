@@ -3,10 +3,10 @@
 ## Author: Kokkai-Twisting Nether
 ## Version: 0.1
 ## Notes: Create a blacklist for players you don't want to play with.
-## IconTexture: Interface\AddOns\BlackSheep\logo
+## IconTexture: Interface\AddOns\BlackSheep\images\logo
 ## SavedVariables: BlackSheepSavedData
 
 BlackSheep.lua
 BlackSheep.xml
-
+CustomList.lua
 

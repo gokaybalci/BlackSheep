@@ -8,21 +8,29 @@ local appName = "BlackSheep";
 local appWidth, appHeight = 500, 200;
 local appMargin = 20;
 
--- GUI
-
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_LOGIN" then
-        -- Initialize BlackSheepSavedData if it doesn't exist
         BlackSheepSavedData = BlackSheepSavedData or {
             retail_DATA = {}
         }
+        
+        CustomList = CustomList or {
+            custom_retail_DATA = {}
+        }
+        if CustomList and CustomList.custom_retail_DATA and next(CustomList.custom_retail_DATA) ~= nil then
+            print("|cff00ccffBlackSheep:|r Your custom blacklist initialized successfully.")
+        end
     end
 end)
 
+
+
+-- GUI Window
+
 local function ShowInputDialog()
-    local dialog = CreateFrame("Frame", "BlackSheepInputDialog", UIParent, "BasicFrameTemplate")
+    local dialog = CreateFrame("Frame", "BlackSheepInputDialog", UIParent, "BasicFrameTemplateWithInset")
     dialog:SetSize(250, 185)
     dialog:SetPoint("CENTER", UIParent, "CENTER")
     dialog:EnableMouse(true)
@@ -32,37 +40,36 @@ local function ShowInputDialog()
     dialog:SetScript("OnDragStop", dialog.StopMovingOrSizing)
 
     dialog.title = dialog:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    dialog.title:SetPoint("TOP", dialog, "TOP", 0, -5)
+    dialog.title:SetPoint("TOP", dialog, "TOP", -3, -5)
     dialog.title:SetText("Add player to blacklist:")
 
     dialog.nameLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    dialog.nameLabel:SetPoint("TOPLEFT", dialog, "TOPLEFT", 10, -40)
+    dialog.nameLabel:SetPoint("TOPLEFT", dialog, "TOPLEFT", 15, -45)
     dialog.nameLabel:SetText("Name:")
 
     dialog.nameEditBox = CreateFrame("EditBox", "BlackSheepNameEditBox", dialog, "InputBoxTemplate")
     dialog.nameEditBox:SetSize(200, 20)
-    dialog.nameEditBox:SetPoint("TOPLEFT", dialog.nameLabel, "BOTTOMLEFT", 0, -10)
+    dialog.nameEditBox:SetPoint("TOPLEFT", dialog.nameLabel, "LEFT", 10, -12)
     dialog.nameEditBox:SetAutoFocus(true)
 
     dialog.reasonLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    dialog.reasonLabel:SetPoint("TOPLEFT", dialog.nameEditBox, "BOTTOMLEFT", 0, -20)
+    dialog.reasonLabel:SetPoint("TOPLEFT", dialog, "BOTTOMLEFT", 15, 85)
     dialog.reasonLabel:SetText("Reason:")
 
     dialog.reasonEditBox = CreateFrame("EditBox", "BlackSheepReasonEditBox", dialog, "InputBoxTemplate")
     dialog.reasonEditBox:SetSize(200, 20)
-    dialog.reasonEditBox:SetPoint("TOPLEFT", dialog.reasonLabel, "BOTTOMLEFT", 0, -10)
+    dialog.reasonEditBox:SetPoint("TOPLEFT", dialog.reasonLabel, "LEFT", 10, -12)
+    dialog.reasonEditBox:SetAutoFocus(true)
 
     dialog.okayButton = CreateFrame("Button", nil, dialog, "UIPanelButtonTemplate")
-    dialog.okayButton:SetPoint("BOTTOMLEFT", dialog, "BOTTOM", 10, 10)
+    dialog.okayButton:SetPoint("BOTTOMLEFT", dialog, "BOTTOM", 20, 15)
     dialog.okayButton:SetSize(80, 22)
     dialog.okayButton:SetText("OK")
     dialog.okayButton:SetScript("OnClick", function()
         local playerName = dialog.nameEditBox:GetText()
         local reason = dialog.reasonEditBox:GetText()
         if playerName ~= "" and reason ~= "" then
-            -- Append the user input to the blacklist
             table.insert(BlackSheepSavedData.retail_DATA, {playerName, reason})
-            ReloadUI() -- Reload the UI to save the changes
         end
         dialog:Hide()
     end)
@@ -70,24 +77,28 @@ local function ShowInputDialog()
     return dialog
 end
 
--- Function to handle slash commands (/bs)
-SLASH_BLACKSHEEP1 = "/bs"
-SlashCmdList["BLACKSHEEP"] = function(msg)
-    ShowInputDialog() -- Show input dialog as a standalone window
+local function OnLogout()
+    SavedData = BlackSheepSavedData
 end
 
+-- Chat Commands
+SLASH_BLACKSHEEP1 = "/bs"
+SlashCmdList["BLACKSHEEP"] = function(msg)
+    ShowInputDialog()
+end
 
+-- Login Messages
 local addonLoadFrame = CreateFrame("Frame")
 addonLoadFrame:RegisterEvent("ADDON_LOADED")
 addonLoadFrame:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName and not addonLoaded then
         addonLoaded = true
-        print("|cff00ccffBlackSheep Version " .. appVersion .. "|r")
-        print("|cff00ccffYou can type /bs to use BlackSheep.|r")
+        print("|cff00ccffBlackSheep Version " .. appVersion .. "|r (type /bs to use)")
     end
 end)
 
 
+-- Tooltip Data
 
 if not TooltipDataProcessor.AddTooltipPostCall then return end
 
@@ -105,11 +116,24 @@ TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tool
     if name then
         local isBlackSheep = false
         local reason = nil
+
+        -- Check BlackSheepSavedData
         if BlackSheepSavedData then
             for _, data in ipairs(BlackSheepSavedData.retail_DATA) do
                 if data[1] == name then
                     isBlackSheep = true
-                    reason = data[2] or "" -- Get the reason for the blacklist or use an empty string if none is provided
+                    reason = data[2] or ""
+                    break
+                end
+            end
+        end
+
+        -- Check CustomList
+        if CustomList then
+            for _, data in ipairs(CustomList.custom_retail_DATA) do
+                if data[1] == name then
+                    isBlackSheep = true
+                    reason = data[2] or ""
                     break
                 end
             end
@@ -132,6 +156,7 @@ TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tool
         end
     end
 end)
+
 
 
 
