@@ -87,9 +87,3 @@ CustomList = {
 ## License
 
 GPL-3.0 license
-
-
-
-
-
-****![](https://i.imgur.com/5Fzdm58.png)****
