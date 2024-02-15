@@ -75,6 +75,7 @@ CustomList = {
 - [X] Character-wide blacklist
 - [X] Custom player list integration
 - [X] Import-export function
+- [　] Send data to guildies through guild chat
 - [　] Right-click context menu
 - [　] Warning screen when they are in your group
 
