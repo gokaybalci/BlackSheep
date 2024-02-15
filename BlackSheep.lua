@@ -25,14 +25,14 @@ end)
 
 
 local function ObfuscateString(str)
-    -- Convert each character to its ASCII code and concatenate them
     local obfuscated = ""
     for i = 1, #str do
         obfuscated = obfuscated .. string.byte(str, i) .. ","
     end
     return obfuscated
 end
--- Encoding the data
+
+
 local function EncodeData(data)
     local encodedData = ""
     for _, entry in ipairs(data) do
@@ -93,14 +93,7 @@ local function DeobfuscateString(obfuscated)
     return deobfuscated
 end
 
--- Function to decode data and add it to BlackSheepSavedData
-local function DecodeAndAddData(encodedData)
-    for name, reason in encodedData:gmatch("([^!S!]+)!S!([^!E!]+)!E!") do
-        local decodedName = DeobfuscateString(name)
-        local decodedReason = DeobfuscateString(reason)
-        table.insert(BlackSheepSavedData.retail_DATA, {decodedName, decodedReason})
-    end
-end
+
 
 -- Decoding the data
 local function DecodeData(encodedData)
@@ -113,23 +106,6 @@ local function DecodeData(encodedData)
     return decodedData
 end
 
-
---[[ --- debug 
-
-local encodedData = EncodeData({{"Kathos", "Rule Violation"}})
-print("Encoded data:", encodedData)
-
-local decodedData = DecodeData(encodedData)
-print("Decoded data:")
-for _, entry in ipairs(decodedData) do
-    print("Name:", entry[1], "Reason:", entry[2])
-end ]]
-
-local function AddDecodedData(decodedData)
-    for _, entry in ipairs(decodedData) do
-        table.insert(BlackSheepSavedData, entry)
-    end
-end
 
 -- Import Data Window
 local function ShowImportDialog()
