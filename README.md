@@ -29,12 +29,13 @@
 
 * Blacklist people for leaving, scamming or any reason whatsoever.
 * Your list works on across all your characters.
+* You can import and export lists.
 
 ## How to Use
 
 ![Baine](/images/Baine.png)
 
-- Write /bs in-game chat
+- Write /bs in-game chat *(/bs help for all commands)*
 - Write the name of the player and blacklisting reason
 - Enjoy!
 
@@ -73,6 +74,7 @@ CustomList = {
 ## Todo
 - [X] Character-wide blacklist
 - [X] Custom player list integration
+- [X] Import-export function
 - [　] Right-click context menu
 - [　] Warning screen when they are in your group
 
@@ -84,3 +86,9 @@ CustomList = {
 ## License
 
 GPL-3.0 license
+
+
+
+
+
+****![](https://i.imgur.com/5Fzdm58.png)****

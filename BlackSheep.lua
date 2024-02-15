@@ -1,9 +1,8 @@
-
 local addon = {};
 local addonName = "BlackSheep";
 local appAuthor = "Kokkai";
-local appVersion = "0.1";
-local appDate = "11-02-2024";
+local appVersion = "0.2";
+local appDate = "14-02-2024";
 local appName = "BlackSheep";
 local appWidth, appHeight = 500, 200;
 local appMargin = 20;
@@ -15,7 +14,6 @@ frame:SetScript("OnEvent", function(self, event, ...)
         BlackSheepSavedData = BlackSheepSavedData or {
             retail_DATA = {}
         }
-        
         CustomList = CustomList or {
             custom_retail_DATA = {}
         }
@@ -24,6 +22,161 @@ frame:SetScript("OnEvent", function(self, event, ...)
         end
     end
 end)
+
+
+local function ObfuscateString(str)
+    -- Convert each character to its ASCII code and concatenate them
+    local obfuscated = ""
+    for i = 1, #str do
+        obfuscated = obfuscated .. string.byte(str, i) .. ","
+    end
+    return obfuscated
+end
+-- Encoding the data
+local function EncodeData(data)
+    local encodedData = ""
+    for _, entry in ipairs(data) do
+        local obfuscatedName = ObfuscateString(entry[1])
+        local obfuscatedReason = ObfuscateString(entry[2])
+        encodedData = encodedData .. obfuscatedName .. "!S!" .. obfuscatedReason .. "!E!"
+    end
+    return encodedData
+end
+
+
+
+-- Export Data Window
+local function ExportDataTables()
+    local exportString = ""
+    exportString = exportString .. EncodeData(BlackSheepSavedData.retail_DATA) .. "\n"
+    exportString = exportString .. EncodeData(CustomList.custom_retail_DATA) .. "\n"
+    
+    local exportFrame = CreateFrame("Frame", "exportFrame", UIParent, "BasicFrameTemplateWithInset")
+    exportFrame:SetSize(400, 300)
+    exportFrame:SetPoint("CENTER")
+    exportFrame:SetMovable(true)
+    exportFrame:EnableMouse(true)
+    exportFrame:RegisterForDrag("LeftButton")
+    exportFrame:SetScript("OnDragStart", exportFrame.StartMoving)
+    exportFrame:SetScript("OnDragStop", exportFrame.StopMovingOrSizing)
+    exportFrame.title = exportFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    exportFrame.title:SetPoint("TOP", exportFrame, "TOP", -3, -5)
+    exportFrame.title:SetText("Export your list:")
+
+    local scrollFrame = CreateFrame("ScrollFrame", "ExportScrollFrame", exportFrame, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetSize(330, 250)
+    scrollFrame:SetPoint("TOP", exportFrame, "TOP", 0, -30)
+
+    exportFrame.editBox = CreateFrame("EditBox", nil, scrollFrame)
+    exportFrame.editBox:SetMultiLine(true)
+    exportFrame.editBox:SetFontObject(ChatFontNormal)
+    exportFrame.editBox:SetWidth(300)
+    exportFrame.editBox:SetText(exportString)
+
+    scrollFrame:SetScrollChild(exportFrame.editBox)
+
+    exportFrame:Show()
+end
+
+
+local function DeobfuscateString(obfuscated)
+    local asciiCodes = {}
+    for code in obfuscated:gmatch("(%d+),") do
+        table.insert(asciiCodes, tonumber(code))
+    end
+    
+
+    local deobfuscated = ""
+    for _, code in ipairs(asciiCodes) do
+        deobfuscated = deobfuscated .. string.char(code)
+    end
+    return deobfuscated
+end
+
+-- Function to decode data and add it to BlackSheepSavedData
+local function DecodeAndAddData(encodedData)
+    for name, reason in encodedData:gmatch("([^!S!]+)!S!([^!E!]+)!E!") do
+        local decodedName = DeobfuscateString(name)
+        local decodedReason = DeobfuscateString(reason)
+        table.insert(BlackSheepSavedData.retail_DATA, {decodedName, decodedReason})
+    end
+end
+
+-- Decoding the data
+local function DecodeData(encodedData)
+    local decodedData = {}
+    for name, reason in encodedData:gmatch("([^!S!]+)!S!([^!E!]+)!E!") do
+        local decodedName = DeobfuscateString(name)
+        local decodedReason = DeobfuscateString(reason)
+        table.insert(decodedData, {decodedName, decodedReason})
+    end
+    return decodedData
+end
+
+
+--[[ --- debug 
+
+local encodedData = EncodeData({{"Kathos", "Rule Violation"}})
+print("Encoded data:", encodedData)
+
+local decodedData = DecodeData(encodedData)
+print("Decoded data:")
+for _, entry in ipairs(decodedData) do
+    print("Name:", entry[1], "Reason:", entry[2])
+end ]]
+
+local function AddDecodedData(decodedData)
+    for _, entry in ipairs(decodedData) do
+        table.insert(BlackSheepSavedData, entry)
+    end
+end
+
+-- Import Data Window
+local function ShowImportDialog()
+    -- Create a frame for the import window
+    local importFrame = CreateFrame("Frame", "importFrame", UIParent, "BasicFrameTemplateWithInset")
+    importFrame:SetSize(400, 300)
+    importFrame:SetPoint("CENTER")
+    importFrame:SetMovable(true)
+    importFrame:EnableMouse(true)
+    importFrame:RegisterForDrag("LeftButton")
+    importFrame:SetScript("OnDragStart", importFrame.StartMoving)
+    importFrame:SetScript("OnDragStop", importFrame.StopMovingOrSizing)
+    importFrame.title = importFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    importFrame.title:SetPoint("TOP", importFrame, "TOP", -3, -5)
+    importFrame.title:SetText("Import your list:")
+    
+    local scrollFrame = CreateFrame("ScrollFrame", "ImportScrollFrame", importFrame, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetSize(330, 225)
+    scrollFrame:SetPoint("TOP", importFrame, "TOP", 0, -30)
+
+ 
+    importFrame.editBox = CreateFrame("EditBox", nil, scrollFrame)
+    importFrame.editBox:SetMultiLine(true)
+    importFrame.editBox:SetFontObject(ChatFontNormal)
+    importFrame.editBox:SetWidth(300)
+    importFrame.editBox:SetText("")
+    scrollFrame:SetScrollChild(importFrame.editBox)
+
+    -- Create a button to trigger the import action
+    local importButton = CreateFrame("Button", nil, importFrame, "GameMenuButtonTemplate")
+    importButton:SetPoint("BOTTOM", importFrame, "BOTTOM", 0, 10)
+    importButton:SetText("Import")
+    importButton:SetSize(100, 25)
+    importButton:SetScript("OnClick", function()
+        local importString = importFrame.editBox:GetText()
+        if importString ~= "" then
+            local decodedData = DecodeData(importString)
+            for _, data in ipairs(decodedData) do
+                table.insert(BlackSheepSavedData.retail_DATA, data)
+            end
+            importFrame:Hide()
+            print("Importing is successful.")
+        else
+            print("Import string is empty.")
+        end
+    end)
+end
 
 
 
@@ -77,15 +230,31 @@ local function ShowInputDialog()
     return dialog
 end
 
+
 local function OnLogout()
     SavedData = BlackSheepSavedData
 end
 
+local function HandleChatCommand(msg)
+    if msg == "" then
+        ShowInputDialog()
+    elseif msg == "export" then
+        ExportDataTables()
+    elseif msg == "help" then
+        print("Use /bs to enter a player to blacklist.")
+        print("Use /bs export to export your data.")
+        print("Use /bs import custom list data.")
+    elseif msg == "import" then
+        ShowImportDialog()
+    else
+        print("Unknown command. Usage: /bs help")
+    end
+end
+
+
 -- Chat Commands
 SLASH_BLACKSHEEP1 = "/bs"
-SlashCmdList["BLACKSHEEP"] = function(msg)
-    ShowInputDialog()
-end
+SlashCmdList["BLACKSHEEP"] = HandleChatCommand
 
 -- Login Messages
 local addonLoadFrame = CreateFrame("Frame")
@@ -148,7 +317,6 @@ TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tool
             end
         end
 
-        -- Add "BlackSheep" line and reason if not already present
         if isBlackSheep and not blackSheepLineFound then
             tooltip:AddLine("|cFFFF0000BlackSheep|r")
             tooltip:AddLine("|cFFFF0000Reason:|r " .. reason)
@@ -156,12 +324,5 @@ TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tool
         end
     end
 end)
-
-
-
-
-
-
-
 
 
